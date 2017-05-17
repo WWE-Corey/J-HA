@@ -1,0 +1,77 @@
+ zoneminder:
+   name: ZoneMinder is not running
+   entity_id: sensor.process_zma
+   state: 'off'
+   repeat: 5
+   can_acknowledge: True
+   skip_first: True
+   notifiers:
+     - gmail
+ garage_door:
+   name: Garage Door is open
+   entity_id: sensor.gdstatus
+   state: 'Open'
+   repeat:
+     - 5
+     - 30
+     - 60
+   can_acknowledge: True
+   skip_first: True
+   notifiers:
+     - gmail
+ front_door:
+   name: Front Door is open
+   entity_id: sensor.fdstatus
+   state: 'Open'
+   repeat:
+     - 5
+     - 10
+     - 15
+   can_acknowledge: True
+   skip_first: True
+   notifiers:
+     - gmail
+ back_door:
+   name: Back Door is open
+   entity_id: sensor.bdstatus
+   state: 'Open'
+   repeat:
+     - 5
+     - 10
+     - 15
+   can_acknowledge: True
+   skip_first: True
+   notifiers:
+     - gmail
+ hmblow:
+   name: Hall Motion Sensor battery is low
+   entity_id: binary_sensor.hall_motion_battery_low
+   repeat: 240
+   can_acknowledge: True
+   skip_first: False
+   notifiers:
+     - gmail
+ fdblow:
+   name: Front Door battery is low
+   entity_id: binary_sensor.front_door_battery_low
+   repeat: 240
+   can_acknowledge: True
+   skip_first: False
+   notifiers:
+     - gmail
+ bdblow:
+   name: Back Door battery is low
+   entity_id: binary_sensor.back_door_battery_low
+   repeat: 240
+   can_acknowledge: True
+   skip_first: False
+   notifiers:
+     - gmail
+ gdblow:
+   name: Garage Door battery is low
+   entity_id: binary_sensor.garage_door_battery_low
+   repeat: 240
+   can_acknowledge: True
+   skip_first: False
+   notifiers:
+     - gmail

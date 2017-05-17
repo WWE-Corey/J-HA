@@ -1,0 +1,298 @@
+### customize.yaml
+
+    binary_sensor.floorplan:
+      custom_ui_state_card: floorplan
+      config: !include floorplan.yaml
+
+    binary_sensor.frontd_sensor_5_0:
+      hidden: true
+    sensor.frontd_access_control_5_9:
+      hidden: true
+    sensor.frontd_alarm_type_5_0:
+      hidden: true
+    sensor.frontd_burglar_5_10:
+      hidden: true
+    sensor.frontd_clock_5_14:
+      hidden: true
+    sensor.frontd_sourcenodeid_5_2:
+      hidden: true
+    binary_sensor.garaged_sensor_6_0:
+      hidden: true
+    sensor.garaged_alarm_type_6_0:
+      hidden: true
+    sensor.garaged_burglar_6_10:
+      hidden: true
+    sensor.garaged_sourcenodeid_6_2:
+      hidden: true
+    binary_sensor.backd_sensor_7_0:
+      hidden: true
+    sensor.backd_access_control_7_9:
+      hidden: true
+    sensor.backd_alarm_type_7_0:
+      hidden: true
+    sensor.backd_appliance_7_15:
+      hidden: true
+    sensor.backd_burglar_7_10:
+      hidden: true
+    sensor.backd_emergency_7_13:
+      hidden: true
+    sensor.backd_homehealth_7_16:
+      hidden: true
+    sensor.backd_sourcenodeid_7_2:
+      hidden: true
+    sensor.backd_system_7_12:
+      hidden: true
+    binary_sensor.multisensor1_sensor_9_0:
+      friendly_name: Hall Motion Detector
+      icon: mdi:remote
+    binary_sensor.server_sensor_18_0:
+      friendly_name: Server Motion Detector
+      icon: mdi:remote
+    sensor.frontd_alarm_level_5_1:
+      hidden: true    
+    sensor.fdstatus:
+      friendly_name: Front Door
+      icon: mdi:glassdoor
+    sensor.garaged_alarm_level_6_1:
+      hidden: true
+    sensor.gdstatus:
+      friendly_name: Garage Door
+      icon: mdi:glassdoor
+    sensor.backd_alarm_level_7_1:
+      hidden: true
+    sensor.bdstatus:
+      friendly_name: Back Door
+      icon: mdi:glassdoor
+    sensor.multisensor1_temperature_9_1:
+      friendly_name: Inside Temperature
+    sensor.multisensor1_luminance_9_3:
+      friendly_name: Inside Luminance
+    sensor.multisensor1_relative_humidity_9_5:
+      friendly_name: Inside Humidity
+    sensor.server_temperature_18_1:
+      friendly_name: Server Room Temperature
+    sensor.server_luminance_18_3:
+      friendly_name: Server Room Luminance
+    sensor.server_relative_humidity_18_5:
+      friendly_name: Server Room Humidity
+    sensor.server_alarm_level_18_1:
+      hidden: true
+    sensor.server_alarm_type_18_0:
+      hidden: true
+    sensor.server_burglar_18_10:
+      hidden: true
+    sensor.server_sourcenodeid_18_2:
+      hidden: true
+    sensor.pws_weather:
+      friendly_name: Weather Conditions
+    sensor.pws_temp_f:
+      friendly_name: Outside Temp
+    sensor.pws_feelslike_f:
+      friendly_name: Feels Like
+    sensor.pws_relative_humidity:
+      friendly_name: Relative Humidity
+    sensor.pws_wind_mph:
+      friendly_name: Wind Speed
+      icon: mdi:weather-windy
+    sensor.pws_wind_dir:
+      friendly_name: Wind Direction
+      icon: mdi:weather-windy
+    sensor.pws_heat_index_f:
+      friendly_name: Heat Index
+    sensor.pws_precip_today_in:
+      friendly_name: Precipitation Today
+      icon: mdi:weather-rainy
+    sensor.pws_pressure_in:
+      friendly_name: Barometric Pressure
+    sensor.pws_dewpoint_f:
+      friendly_name: Dew Point
+    sensor.pws_visibility_mi:
+      friendly_name: Visibility
+    sensor.pws_uv:
+      friendly_name: UV
+    sensor.speedtest_download:
+      icon: mdi:speedometer
+    sensor.speedtest_upload:
+      icon: mdi:speedometer
+    switch.siren_switch_10_0:
+      friendly_name: Siren
+      icon: mdi:bell
+      emulated_hue: true
+    switch.winkswitch_switch_11_0:
+      friendly_name: Wink Switch
+      icon: mdi:recycle
+    switch.fan:
+      friendly_name: Living Room Fan Lights
+      icon: mdi:fan
+    switch.fan2:
+      friendly_name: Bedroom Room Fan Lights
+      icon: mdi:fan
+    switch.frporch:
+      icon: mdi:spotlight-beam
+    switch.baporch:
+      icon: mdi:spotlight-beam
+    switch.hall:
+      icon: mdi:lightbulb
+    switch.kitchen2:
+      icon: mdi:lightbulb
+    switch.lrlights:
+      icon: mdi:lightbulb
+    device_tracker.e4115bba117e:
+      hidden: true
+    sensor.wweserver:
+      icon: mdi:server-network
+    device_tracker.10da438cfa19:
+      hidden: true
+    sensor.netgear:
+      icon: mdi:router-wireless
+    device_tracker.homeportal:
+      hidden: true
+    sensor.homeportal:
+      icon: mdi:router-wireless
+    device_tracker.e8abfa6ca38d:
+      hidden: true
+    sensor.lrcam:
+      icon: mdi:camcorder
+    device_tracker.84d6d07fd95c:
+      hidden: true
+    sensor.fire:
+      icon: mdi:television-guide
+    device_tracker.b479a724bd12:
+      hidden: true
+    sensor.wink:
+      icon: mdi:auto-fix
+    device_tracker.e8abfa94237d:
+      hidden: true
+    sensor.kcam:
+      icon: mdi:camcorder
+    device_tracker.9c8ecd08e9a1:
+      hidden: true
+    sensor.fpcam:
+      icon: mdi:camcorder
+    device_tracker.020fb53e986a:
+      hidden: true
+    sensor.bycam:
+      icon: mdi:camcorder
+    device_tracker.hpc9efe3attlocalnet:
+      hidden: true
+    sensor.printer:
+      icon: mdi:printer
+    device_tracker.9c8ecd0bd7ca:
+      hidden: true
+    sensor.bpcam:
+      icon: mdi:camcorder
+    device_tracker.3cef8c9764a0:
+      hidden: true
+    sensor.dwcam:
+      icon: mdi:camcorder
+    device_tracker.unknownc4d6553dcf4fattlocalnet:
+      hidden: true
+    sensor.garagecam:
+      icon: mdi:camcorder
+    device_tracker.44650d5cac5d:
+      hidden: true
+    sensor.firetab:
+      icon: mdi:auto-fix
+    sensor.wweserver_cpu_load:
+      friendly_name: Server Load
+      icon: mdi:memory
+    sensor.wweserver_disk_free:
+      hidden: true
+    sensor.wweserver_disk_use:
+      hidden: true
+    sensor.wweserver_disk_use_2:
+      friendly_name: Server HDD Use
+      icon: mdi:harddisk
+    sensor.wweserver_ram_free:
+      hidden: true
+    sensor.wweserver_ram_use:
+      hidden: true
+    sensor.wweserver_ram_use_2:
+      friendly_name: Server Mem Use
+      icon: mdi:memory
+    sensor.wweserver_running:
+      hidden: true
+    sensor.wweserver_sleeping:
+      hidden: true
+    sensor.wweserver_swap_free:
+      hidden: true
+    sensor.wweserver_swap_use:
+      hidden: true
+    sensor.wweserver_swap_use_2:
+      hidden: true
+    sensor.wweserver_thread:
+      hidden: true
+    sensor.wweserver_total:
+      hidden: true
+    sensor.wweserver_cpu_temp:
+      friendly_name: Server CPU Temp
+    sensor.wweserver_hdd_temp:
+      friendly_name: Server HDD Temp
+    sensor.wweserver_hd_zm:
+      friendly_name: Server HDD Used
+      icon: mdi:harddisk
+    switch.garageswitch_switch_2_0:
+      friendly_name: Garage
+      hidden: true
+    script.garage_door:
+      emulated_hue: true
+      icon: mdi:car
+    group.bedroom_lights:
+      emulated_hue: true
+    group.ceiling_fan_light:
+      emulated_hue: true
+    group.dining_room:
+      emulated_hue: true
+    group.exterior:
+      emulated_hue: true
+    group.kitchen:
+      emulated_hue: true
+    group.living_room:
+      emulated_hue: true
+    light.bedroom_fan_3:
+      friendly_name: Reading Light
+      emulated_hue: true
+    light.lrlamp_level_14_0:
+      friendly_name: Living Room Lamp
+      emulated_hue: true
+      icon: mdi:lamp
+    light.tablelamp_level_15_0:
+      friendly_name: Table Lamp
+      emulated_hue: true
+      icon: mdi:lamp
+    light.bedroomlamp_level_17_0:
+      friendly_name: Bedroom Lamp
+      emulated_hue: true
+      icon: mdi:lamp
+    script.restart_ha:
+      friendly_name: Reboot System
+      emulated_hue: true
+    script.winkreboot:
+      friendly_name: Reboot Wink
+      emulated_hue: true
+#    switch.leviton_dzpa11lw_plugin_appliance_module_switch_3_0:
+#      friendly_name: Trigger2
+#      emulated_hue: true
+#    switch.trigger_switch_16_0:
+#      friendly_name: Trigger1
+    light.front_porch_light:
+      icon: mdi:spotlight-beam
+    light.back_porch_light:
+      icon: mdi:spotlight-beam
+    binary_sensor.kitchenremote:
+      hidden: true
+    device_tracker.020fb5586185:
+      hidden: true
+    sensor.escam:
+      icon: mdi:camcorder
+    device_tracker.b827ebf878ee:
+      hidden: true
+    sensor.pikodi:
+      icon: mdi:kodi
+    device_tracker.020fb5d10182:
+      hidden: true
+    sensor.ex6120:
+      icon: mdi:router-wireless
+    sensor.process_zma:
+      friendly_name: ZoneMinder
+      icon: mdi:server-security

@@ -1,0 +1,47 @@
+### device_tracker.yaml
+
+#################
+### bluetooth_tracker
+#################
+
+##  - platform: bluetooth_tracker
+
+#################
+### nmap_tracker
+#################
+
+- platform: nmap_tracker
+  hosts:
+    - 192.168.1.63-255
+    - 192.168.2.1-255
+  track_new_devices: yes
+  interval_seconds: 15
+  consider_home: 180
+
+#################
+### netgear
+#################
+#- platform: netgear
+#  host: 192.168.2.1
+#  username: admin
+#  password: MiWiCoIy1
+##  port: 8443
+#  interval_seconds: 15
+#  consider_home: 180
+#  track_new_devices: yes
+
+#################
+### gpslogger
+#################
+- platform: gpslogger
+
+#################
+### owntracks
+#################
+
+#- platform: owntracks
+#  max_gps_accuracy: 200
+#  waypoints: True
+#  waypoint_whitelist:
+#    - Corey
+#    - Jenn

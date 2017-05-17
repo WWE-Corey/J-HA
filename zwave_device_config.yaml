@@ -1,0 +1,6 @@
+    light.lrlamp_level_14_0:
+      polling_intensity: 1
+      refresh_value: true
+    light.tablelamp_level_15_0:
+      polling_intensity: 1
+      refresh_value: true

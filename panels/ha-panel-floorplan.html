@@ -1,0 +1,383 @@
+<!-- This file assumes that the following are already imported by Homeassistant <link rel="import" href="../../bower_components/polymer/polymer.html"> -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://momentjs.com/downloads/moment.js"></script>
+
+<dom-module id="ha-panel-floorplan">
+
+  <template>
+    <style include="ha-style">
+    </style>
+
+    <app-header-layout has-scrolling-region>
+
+      <app-header fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Floorplan</div>
+        </app-toolbar>
+      </app-header>
+
+      <div class="flex content">
+        <div id="floorplan" />
+      </div>
+
+    </app-header-layout>
+  </template>
+
+</dom-module>
+
+<script>
+  Polymer({
+    //is: 'state-card-floorplan',
+    is: 'ha-panel-floorplan',
+    ready() {
+    },
+    attached() {
+      this.onAttached();
+    },
+    detached() {
+    },
+    properties: {
+      hass: {
+        type: Object,
+      },
+      inDialog: {
+        type: Boolean,
+        value: false,
+      },
+      stateObj: {
+        type: Object,
+      },
+      stylesheet: {
+        type: String,
+      },
+      trackDuration: {
+        type: Number,
+        value: undefined
+      },
+      lastMotionEntityId: {
+        type: String,
+        value: undefined,
+      },
+      colorOff: {
+        type: String,
+        value: undefined,
+      },
+      colorOn: {
+        type: String,
+        value: '#F8B9BE',
+      },
+      colors: {
+        type: Array,
+        value: [],
+      },
+      timeDifference: {
+        type: Number,
+        value: undefined,
+      },
+      targetEntities: {
+        type: Array,
+        value: [],
+      },
+      shapeInfos: {
+        type: Array,
+        value: [],
+      },
+      config: {
+        type: Object,
+        value: undefined,
+      },
+    },
+    stopPropagation(e) {
+      e.stopPropagation();
+    },
+    onAttached() {
+      // Get the config from either the custom state card, or the custom panel
+      this.config = this.stateObj ? this.stateObj.attributes : this.hass.config.panels[this.hass.currentPanel].config;
+      if (this.config.stylesheet)
+        this.stylesheet = this.config.stylesheet;
+      if (this.config.track_duration)
+        this.trackDuration = this.config.track_duration * 1000;
+      this.lastMotionEntityId = this.config.last_motion_entity;
+      if (this.config.color_on)
+        this.colorOn = this.config.color_on;
+      if (this.config.color_off)
+        this.colorOff = this.config.color_off;
+      if (this.trackDuration && this.colorOff) {
+        for (var i = 0; i <= 100; i++) {
+          var ratio = (i / this.trackDuration) * (this.trackDuration / 100);
+          var color = this.rgbToHex(this.mix(this.hexToRgb(this.colorOff), this.hexToRgb(this.colorOn), ratio));
+          this.colors.push(color);
+        }
+      }
+      setInterval(this.updateEntities.bind(this), 100);
+      var authToken = (window.localStorage && window.localStorage.authToken) ? window.localStorage.authToken : '';
+      
+      var wsUri = ((window.location.protocol === 'https:') ? 'wss:' : 'ws:') + '//' + window.location.host + '/api/websocket';
+      HAWS.createConnection(wsUri, { authToken: authToken }).then(conn => {
+        conn.socket.addEventListener('message', event => {
+          var data = JSON.parse(event.data);
+          // Store the time difference between the local web browser and the Home Assistant server
+          if (data.event && data.event.time_fired) {
+            var lastEventFiredTime = moment(data.event.time_fired).toDate();
+            this.timeDifference = moment().diff(moment(lastEventFiredTime), 'milliseconds');
+          }
+        });
+        HAWS.subscribeEntities(conn, entities => this.handleEntities(entities));
+      }, err => { console.error(err); });
+      this.addExternalCss();
+      this.loadFloorPlan();
+    },
+    addExternalCss() {
+      if (this.stylesheet) {
+        var link = document.createElement('link');
+        link.type = 'text/css';
+        link.rel = 'stylesheet';
+        link.href = this.stylesheet;
+        Polymer.dom(this.root).appendChild(link);
+      }
+    },
+    loadFloorPlan() {
+      jQuery.ajax({
+        url: this.config.floorplan_image + '?cacheBuster=' + (new Date().getTime()),
+        success: function (result) {
+          var svg = Polymer.dom(result).querySelector('svg')
+          svg.style.height = '100%';
+          svg.style.width = '100%';
+		  svg.style.position = 'absolute';
+          var entityIds = this.config.entities;
+          for (var shape of Polymer.dom(svg).querySelectorAll('rect, circle, ellipse, line, polyline, polygon, path')) {
+            if (entityIds.find(entityId => entityId === shape.id)) {
+              this.shapeInfos.push({
+                shapeId: shape.id,
+                shape: shape,
+                clonedShape: shape.cloneNode(true),
+                entityId: shape.id
+              });
+            }
+          }
+          for (var group of Polymer.dom(svg).querySelectorAll('g')) {
+            if (entityIds.find(entityId => entityId === group.id)) {
+              $(group).find('rect, circle, ellipse, line, polyline, polygon, path').each((i, shape) => {
+                this.shapeInfos.push({
+                  shapeId: shape.id,
+                  shape: shape,
+                  clonedShape: shape.cloneNode(true),
+                  entityId: group.id
+                });
+              });
+            }
+          }
+          // Create the title element for each shape (to support tooltips)
+          for (var shapeInfo of this.shapeInfos) {
+            shapeInfo.shape.appendChild(document.createElementNS('', 'title'));
+            shapeInfo.shape.setAttribute('title', 'Some title');
+          }
+          // Create a new SVG element and copy the contents from the original SVG
+          var newSvg = document.createElementNS('', 'svg');
+          var floorplan = this.$$('#floorplan');
+          floorplan.appendChild(newSvg);
+          newSvg.outerHTML = svg.outerHTML;
+          $(Polymer.dom(this.root).querySelectorAll('svg')).css('cursor', 'default');
+          for (var shapeInfo of this.shapeInfos) {
+            var shape = $(Polymer.dom(this.root).querySelectorAll('svg [id="' + shapeInfo.shapeId + '"]'))
+            if (shape.length) {
+              $(shape).attr('title', 'test');
+              $(shape).on('click', this.onShapeClick.bind(this));
+              $(shape).css('cursor', 'pointer');
+              $(shape).addClass('entity');
+            }
+          }
+        }.bind(this)
+      });
+    },
+    getTargetEntities(entities) {
+      var targetEntities = [];
+      var entityIds = this.config.entities;
+      if (entityIds) {
+        for (var entityId of entityIds) {
+          var entity = entities[entityId];
+          var domain = entity.entity_id.split('.')[0];
+          var isSensor = (domain.indexOf('sensor') >= 0);
+          var isSwitch = (domain.indexOf('switch') >= 0);
+          targetEntities.push({
+            entityId: entity.entity_id,
+            domain: domain,
+            friendlyName: entity.attributes.friendly_name,
+            lastChangedTime: undefined,
+            useColors: isSensor || isSwitch,
+            useTransition: isSensor && this.trackDuration,
+            trackDuration: this.trackDuration
+          });
+        }
+      }
+      return targetEntities;
+    },
+    handleEntities(entities) {
+      if (!this.targetEntities || !this.targetEntities.length) {
+        this.targetEntities = this.getTargetEntities(entities);
+      }
+      var svg = this.$$('#floorplan svg');
+      for (var entityId of Object.keys(entities)) {
+        var entity = entities[entityId];
+        var targetEntity = this.targetEntities.find(targetEntity => targetEntity.entityId == entity.entity_id);
+        if (!targetEntity)
+          continue;
+        var shapeInfos = [];
+        for (var shapeInfo of this.shapeInfos) {
+          if (shapeInfo.entityId === entity.entity_id) {
+            shapeInfos.push(shapeInfo);
+          }
+        }
+        for (var shapeInfo of shapeInfos) {
+          var shape = Polymer.dom(svg).querySelector('[id="' + shapeInfo.shapeId + '"]');
+          var title = Polymer.dom(shape).querySelector('title');
+          if (title) {
+            title.innerHTML = entity.attributes.friendly_name + '\n' +
+              'State: ' + entity.state + '\n' +
+              'Last changed date: ' + moment(entity.last_changed).format('DD-MMM-YYYY') + '\n' +
+              'Last changed time: ' + moment(entity.last_changed).format('HH:mm:ss');;
+          }
+          if (targetEntity.useColors) {
+            if ((entity.state.toLowerCase() === 'on') || (entity.state.toLowerCase() === 'open')) {
+              this.setFill(shape, 1);
+              targetEntity.lastChangedTime = undefined;
+            }
+            else {
+              if (this.timeDifference === undefined) {
+                this.setFill(shape, 0);
+              }
+              else {
+                if (targetEntity.useTransition) {
+                  // Determine the current time on the server (based on the local vs. server time difference)
+                  var serverMoment = moment();
+                  if (this.timeDifference >= 0)
+                    serverMoment.subtract(this.timeDifference, 'milliseconds');
+                  else
+                    serverMoment.add(Math.abs(this.timeDifference), 'milliseconds');
+                  var lastChangedMoment = moment(entity.last_changed);
+                  var elapsed = Math.max(serverMoment.diff(lastChangedMoment, 'milliseconds'), 0);
+                  var remaining = targetEntity.trackDuration - elapsed;
+                  if (remaining > 0) {
+                    targetEntity.lastChangedTime = lastChangedMoment.toDate();
+                  }
+                  else {
+                    this.setFill(shape, 0);
+                  }
+                }
+                else {
+                  this.setFill(shape, 0);
+                }
+              }
+            }
+          }
+          if (this.lastMotionEntityId && (entity.attributes.friendly_name === entities[this.lastMotionEntityId].state)) {
+            if (!shape.classList.contains('last-motion')) {
+              shape.classList.add('last-motion');
+            }
+          }
+          else {
+            if (shape.classList.contains('last-motion')) {
+              shape.classList.remove('last-motion');
+            }
+          }
+        }
+      }
+    },
+    updateEntities() {
+      if (!this.targetEntities || !this.targetEntities.length)
+        return;
+      var entitiesToUpdate = this.targetEntities.filter(entity => entity.lastChangedTime != undefined);
+      if (!entitiesToUpdate.length || (this.timeDifference === undefined))
+        return;
+      var serverMoment = moment();
+      if (this.timeDifference >= 0)
+        serverMoment.subtract(this.timeDifference, 'milliseconds');
+      else
+        serverMoment.add(Math.abs(this.timeDifference), 'milliseconds');
+      var svg = this.$$('#floorplan svg');
+      for (var targetEntity of entitiesToUpdate) {
+        var shape = Polymer.dom(svg).querySelector('[id="' + targetEntity.entityId + '"]');
+        if (!shape)
+          continue;
+        var elapsed = serverMoment.diff(moment(targetEntity.lastChangedTime), 'milliseconds');
+        if (elapsed < 0) {
+          this.setFill(shape, 1);
+        }
+        else {
+          if (elapsed < targetEntity.trackDuration) {
+            this.setFill(shape, elapsed / targetEntity.trackDuration);
+          }
+          else {
+            targetEntity.lastChangedTime = undefined;
+            this.setFill(shape, 0);
+          }
+        }
+      }
+    },
+    onShapeClick(e) {
+      var shapeInfo = this.shapeInfos.find(shapeInfo => shapeInfo.shapeId === e.target.id);
+      if (shapeInfo) {
+        entity = this.targetEntities.find(entity => entity.entityId === shapeInfo.entityId);
+        if (entity) {
+          this.fire('hass-more-info', { entityId: entity.entityId });
+        }
+      }
+    },
+    setFill(shape, value) {
+      if (this.colorOff) {
+        if (value >= 1) {
+          shape.style.fill = this.colorOn;
+        }
+        else if (value <= 0) {
+          shape.style.fill = this.colorOff;
+        }
+        else {
+          var colorIndex = Math.floor(value * this.colors.length);
+          var color = this.colors[colorIndex];
+          shape.style.fill = color;
+        }
+      }
+      else {
+        if (value >= 1) {
+          shape.style.fill = this.colorOn;
+        }
+        else {
+          var shapeInfo = this.shapeInfos.find(shapeInfo => shapeInfo.shapeId === shape.id);
+          if (shapeInfo) {
+            shape.style.fill = shapeInfo.clonedShape.style.fill;
+          }
+        }
+      }
+    },
+    rgbToHex(rgb) {
+      return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);
+    },
+    hexToRgb(hex) {
+      // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+      var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+      hex = hex.replace(shorthandRegex, (m, r, g, b) => {
+        return r + r + g + g + b + b;
+      });
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    },
+    mix(color1, color2, weight) {
+      var p = weight;
+      var w = p * 2 - 1;
+      var w1 = ((w / 1) + 1) / 2;
+      var w2 = 1 - w1;
+      var rgb = [
+        Math.round(color1.r * w1 + color2.r * w2),
+        Math.round(color1.g * w1 + color2.g * w2),
+        Math.round(color1.b * w1 + color2.b * w2)
+      ];
+      return rgb;
+    }
+  });
+</script>

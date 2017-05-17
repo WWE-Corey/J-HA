@@ -1,0 +1,598 @@
+homeassistant:
+  name: Master
+  latitude: !secret latitude
+  longitude: !secret longitude
+  elevation: !secret elevation
+  unit_system: imperial
+  time_zone: America/Chicago
+
+  customize: !include customize.yaml
+
+# introduction:
+
+frontend:
+
+# ZWave Battery sensors
+battery_state:
+  include:
+    - device_tracker.51f8ba2a
+    - device_tracker.6508c65b
+
+http:
+  api_password: !secret http_password
+  server_port: !secret server_port
+
+# Checks for available updates
+updater:
+
+# Discover some devices automatically
+discovery:
+
+device_tracker: !include device_tracker.yaml
+
+# floorplan
+panel_custom: !include panel_custom.yaml
+
+recorder:
+  purge_days: 10
+
+#logger:
+#  default: info
+
+sun:
+
+zone:
+  name: Gexpro
+  latitude: !secret glatitude
+  longitude: !secret glongitude
+  radius: 200
+  icon: mdi:worker
+
+zone 2:
+  name: Medifast
+  latitude: !secret mlatitude
+  longitude: !secret mlongitude
+  radius: 200
+  icon: mdi:hospital
+
+zone 3:
+  name: Rock Boxing
+  latitude: !secret rlatitude
+  longitude: !secret rlongitude
+  radius: 200
+  icon: mdi:run
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+#conversation:
+
+alarm_control_panel:
+  platform: manual
+  name: "HA Alarm"
+  code: !secret alarm_code
+  pending_time: 45
+  trigger_time: 45
+  disarm_after_trigger: false
+
+ffmpeg:
+  ffmpeg_bin: /usr/bin/ffmpeg
+
+# Devices
+media_player:
+  - platform: firetv
+  - platform: kodi
+    host: !secret kodi_host
+    port: !secret kodi_port
+    name: Kodi
+    username: kodi
+    password: kodi
+    turn_off_action: shutdown
+
+wink:
+  email: !secret wink_email
+  password: !secret wink_password
+  client_id: !secret wink_client_id
+  client_secret: !secret wink_client_secret
+#  access_token: !secret wink_access_token
+##  refresh_token: !secret wink_refresh_token
+
+emulated_hue:
+  type: alexa
+  host_ip: !secret alexa_host_ip
+  listen_port: !secret alexa_listen_port
+  expose_by_default: false
+
+  #emulated_hue:
+#  hue1:
+#    type: alexa
+#    host_ip: !secret alexa_host_ip
+#    listen_port: !secret_alexa_listen_port
+#    expose_by_default: false
+##  exposed_domains:
+##    - light
+#  hue2:
+#    type: google_home
+#    host_ip: !secret google_host_ip
+#    listen_port: 80
+
+zoneminder:
+  host: !secret camera_server
+  path: /zm/
+  ssl: False
+  username: !secret camera_serveruid
+  password: !secret camera_serverpw
+
+zwave:
+  usb_path: /dev/zwave
+#  config_path: /srv/homeassistant/src/python-openzwave/openzwave/config
+  config_path: /srv/homeassistant/lib/python3.5/site-packages/libopenzwave-0.3.1-py3.5-linux-x86_64.egg/config
+  polling_interval: 60000
+  device_config: !include zwave_device_config.yaml
+
+camera:
+ platform: zoneminder
+
+# Enables support for tracking state changes over time.
+history:
+
+# View all events in a logbook
+logbook:
+
+# Track the sun
+#sun:
+
+sensor: !include sensors.yaml
+
+binary_sensor: !include binary_sensors.yaml
+
+automation: !include_dir_merge_list automation/
+
+switch: !include switches.yaml
+
+mqtt:
+  broker: !secret mqtt_broker
+  port: !secret mqtt_port
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+
+light:  
+  - platform: mqtt_json
+    name: "SN1 LED"
+    state_topic: "sensornode1"
+    command_topic: "sensornode1/set"
+    brightness: true
+    flash: true
+    rgb: true
+    optimistic: false  
+    qos: 0
+
+  - platform: mqtt_json
+    name: "SN2 LED"
+    state_topic: "sensornode2"
+    command_topic: "sensornode2/set"
+    brightness: true
+    flash: true
+    rgb: true
+    optimistic: false  
+    qos: 0
+
+group:
+####VIEWS
+  family:
+   view: yes
+   name: Home
+   icon: mdi:home-variant
+   entities:
+     - switch.kitchen2
+     - switch.fan
+     - switch.fan2
+     - switch.lrlights
+     - switch.hall
+     - switch.frporch
+     - switch.baporch
+     - switch.winkswitch_switch_11_0
+
+  environment_view:
+   view: yes
+   name: Environment
+   entities:
+     - climate.thermostat
+     - group.weather
+     - group.inside
+     - group.time_date
+
+  camera_view:
+   view: yes
+   name: Cameras
+   entities:
+     - camera.back_porch
+     - camera.back_yard
+     - camera.driveway
+     - camera.eastside
+     - camera.fire_cam
+     - camera.front_porch
+     - camera.garage
+     - camera.k_cam
+     - camera.lr_cam
+
+  security_view:
+   view: yes
+   name: Security
+   entities:
+     - alarm_control_panel.ha_alarm
+     - group.doors
+     - group.family_status
+     - group.security_devices
+     - sensor.process_zma
+     - group.layout
+
+  hardware_view:
+   view: yes
+   name: Hardware
+   entities:
+     - group.hardware
+     - group.security_devices
+     - group.speedtest
+#     - group.system
+     - group.server
+     - group.batteries
+#     - script.bpcreboot
+#     - script.fpcreboot
+     - script.winkreboot
+     - script.restart_ha
+
+####GROUPS
+  Layout:
+   name: Layout
+   entities:
+     - sensor.template_last_motion
+     - binary_sensor.floorplan
+
+  Alarm:
+    name: Alarm
+    entities:
+      - alarm_control_panel.ha_alarm
+      - script.light_flash
+      - script.light_loop
+      - script.restart_ha
+      - switch.siren_switch_10_0
+
+  Time_Date:
+    name: Time & Date
+    entities:
+      - sensor.time
+      - sensor.date
+
+  Weather:
+    name: Weather
+#    view: yes
+    entities:
+      - sun.sun
+      - sensor.pws_weather
+      - sensor.pws_temp_f
+      - sensor.pws_feelslike_f
+      - sensor.pws_heat_index_f
+      - sensor.pws_dewpoint_f
+      - sensor.pws_wind_mph
+      - sensor.pws_UV
+      - sensor.pws_pressure_in
+      - sensor.pws_wind_dir
+      - sensor.pws_relative_humidity
+      - sensor.pws_visibility_mi
+      - sensor.pws_precip_today_in
+
+  Inside:
+    name: Inside Conditions
+    entities:
+      - sensor.multisensor1_luminance_9_3
+      - sensor.multisensor1_relative_humidity_9_5
+      - sensor.multisensor1_temperature_9_1
+
+  Doors:
+    name: Doors
+    entities:
+      - binary_sensor.multisensor1_sensor_9_0
+      - binary_sensor.server_sensor_18_0
+      - binary_sensor.frontd_sensor_5_0
+      - sensor.frontd_access_control_5_9
+      - sensor.frontd_alarm_level_5_1
+      - sensor.frontd_alarm_type_5_0
+      - sensor.frontd_burglar_5_10
+      - sensor.frontd_clock_5_14
+      - sensor.frontd_sourcenodeid_5_2
+      - binary_sensor.backd_sensor_7_0
+      - sensor.backd_access_control_7_9
+      - sensor.backd_alarm_level_7_1
+      - sensor.backd_alarm_type_7_0
+      - sensor.backd_appliance_7_15
+      - sensor.backd_burglar_7_10
+      - sensor.backd_emergency_7_13
+      - sensor.backd_homehealth_7_16
+      - sensor.backd_sourcenodeid_7_2
+      - sensor.backd_system_7_12
+      - binary_sensor.garaged_sensor_6
+      - sensor.garaged_alarm_level_6
+      - sensor.garaged_alarm_type_6
+      - sensor.garaged_burglar_6
+      - sensor.garaged_sourcenodeid_6
+      - sensor.fdstatus
+      - sensor.bdstatus
+      - sensor.gdstatus
+
+  Bedroom Lights:
+    name: Bedroom Lights
+    entities:
+      - light.bedroom_fan_1
+      - light.bedroom_fan_2
+      - light.bedroom_fan_3
+      - light.bedroomlamp_level_17_0
+
+  Ceiling Fan Light:
+    name: Ceiling Fan Light
+    entities:
+      - light.ceiling_fan_light_1
+      - light.ceiling_fan_light_2
+      - light.ceiling_fan_light_3
+      - light.ceiling_fan_light_4
+
+  Dining Room:
+    name: Dining Room
+    entities:
+      - light.dining_room_1
+      - light.dining_room_2
+
+  Exterior:
+    name: Exterior
+    entities:
+      - light.front_porch_light
+      - light.back_porch_light
+
+  Family Status:
+    name: Family Status
+    entities:
+      - device_tracker.android442d3a71fad5bdd8attlocalnet
+      - device_tracker.androidee48186e6ffa5396attlocalnet
+      - device_tracker.51f8ba2a
+      - device_tracker.android68255e26a3d36bfe
+      - device_tracker.6508c65b
+
+  Kitchen:
+    name: Kitchen
+    entities:
+      - light.kitchen_1
+      - light.kitchen_2
+
+  Living Room:
+    name: Living Room
+    entities:
+      - light.lrlamp_level_14_0
+      - light.tablelamp_level_15_0
+
+  Hall:
+    name: Hallway Lights
+    entities:
+      - light.hall_light_1
+      - light.hall_light_2
+
+  Speedtest:
+    name: Speedtest
+    entities:
+      - sensor.speedtest_download
+      - sensor.speedtest_upload
+
+  Server:
+    name: Server
+    entities:
+      - sensor.server_luminance_18_3
+      - sensor.server_relative_humidity_18_5
+      - sensor.server_temperature_18_1
+      - sensor.wweserver_cpu_load
+      - sensor.cpu_use
+      - sensor.wweserver_disk_free
+      - sensor.wweserver_disk_use
+      - sensor.wweserver_disk_use_2
+      - sensor.wweserver_ram_free
+      - sensor.wweserver_ram_use
+      - sensor.wweserver_ram_use_2
+      - sensor.wweserver_running
+      - sensor.wweserver_sleeping
+      - sensor.wweserver_swap_free
+      - sensor.wweserver_swap_use
+      - sensor.wweserver_swap_use_2
+      - sensor.wweserver_thread
+      - sensor.wweserver_total
+      - sensor.wweserver_cpu_temp
+      - sensor.wweserver_hdd_temp
+      - sensor.wweserver_hd_zm
+
+  Hardware:
+    name: Devices
+    entities:
+      - sensor.wweserver
+      - sensor.pikodi
+      - sensor.fire
+      - sensor.wink
+      - sensor.homeportal
+      - sensor.netgear
+      - sensor.ex6120
+      - binary_sensor.wwhahub
+      - sensor.printer
+      - sensor.firetab
+      - sensor.process_zma
+
+  Security_devices:
+    name: Cameras
+    entities:
+      - sensor.lrcam
+      - sensor.kcam
+      - sensor.fpcam
+      - sensor.bpcam
+      - sensor.garagecam
+      - sensor.dwcam
+      - sensor.bycam
+      - sensor.escam
+
+  Batteries:
+    name: Batteries
+    entities:
+      - sensor.51f8ba2a_battery
+      - sensor.6508c65b_battery
+      - sensor.fd_battery
+      - binary_sensor.front_door_battery_low
+      - sensor.bd_battery
+      - binary_sensor.back_door_battery_low
+      - sensor.gd_battery
+      - binary_sensor.garage_door_battery_low
+      - sensor.hallmotion_battery
+      - binary_sensor.hall_motion_battery_low
+
+  sensor_node_cards:  
+    name: Sensor Nodes  
+    entities:  
+      - sensor.sn1_temperature  
+      - sensor.sn1_humidity  
+      - sensor.sn1_ldr  
+      - sensor.sn1_pir  
+      - light.sn1_led
+      - sensor.sn2_temperature  
+      - sensor.sn2_humidity  
+      - sensor.sn2_ldr  
+      - sensor.sn2_pir  
+      - light.sn2_led
+
+#### scripts
+script:
+  light_flash:
+    alias: Light flash on
+    sequence:
+      - service: homeassistant.turn_on
+        data:
+          entity_id: group.all_lights
+      - delay:
+          seconds: 1
+      - service: homeassistant.turn_off
+        data:
+          entity_id: group.all_lights
+      - service: script.turn_on
+        data:
+          entity_id: script.light_loop
+  light_loop:
+    alias: Light flash loop
+    sequence:
+      - delay:
+          # time for flash light off
+          seconds: 1
+      - service: script.turn_on
+        data:
+          entity_id: script.light_flash
+### Restart HASS
+  restart_ha:
+    alias: Restart HA
+    sequence:
+      - alias: Restart HA
+        service: homeassistant.restart
+  away_on:
+    alias: Simulate Home
+    sequence:
+      - service: homeassistant.turn_on
+        data:
+          entity_id: light.ceiling_fan_light_1
+      - service: homeassistant.turn_on
+        data:
+          entity_id: light.dining_room_1
+      - service: homeassistant.turn_on
+        data:
+          entity_id: light.bedroom_fan_1
+      - service: homeassistant.turn_on
+        data:
+          entity_id: switch.siren_switch_10
+  away_off:
+    alias: Simulate Off
+    sequence:
+      - service: homeassistant.turn_off
+        data:
+          entity_id: light.ceiling_fan_light_1
+      - service: homeassistant.turn_off
+        data:
+          entity_id: light.dining_room_1
+      - service: homeassistant.turn_off
+        data:
+          entity_id: light.bedroom_fan_1
+      - service: homeassistant.turn_on
+        data:
+          entity_id: switch.siren_switch_10
+### Reboot Wink Hub
+  winkreboot:
+    alias: Restart Wink
+    sequence:
+      - service: homeassistant.turn_off
+        data:
+          entity_id: switch.winkswitch_switch_11_0
+      - delay:
+          seconds: 30
+      - service: homeassistant.turn_on
+        data:
+          entity_id: switch.winkswitch_switch_11_0
+### Reboot Camera
+#  bpcreboot:
+#    alias: Restart BPC
+#    sequence:
+#      - service: homeassistant.turn_off
+#        data:
+#          entity_id: switch.trigger_switch_16_0
+#      - delay:
+#          seconds: 25
+#      - service: homeassistant.turn_on
+#        data:
+#          entity_id: switch.trigger_switch_16_0
+
+#  fpcreboot:
+#    alias: Restart FPC
+#    sequence:
+#      - service: homeassistant.turn_off
+#        data:
+#          entity_id: switch.leviton_dzpa11lw_plugin_appliance_module_switch_3_0
+#      - delay:
+#          seconds: 25
+#      - service: homeassistant.turn_on
+#        data:
+#          entity_id: switch.leviton_dzpa11lw_plugin_appliance_module_switch_3_0
+
+### Garage door opener
+  garage_door:
+    alias: Garage Door
+    sequence:
+      - event: LOGBOOK_ENTRY
+        event_data:
+          name: EVENT
+          message: "Garage door opener clicked."
+      - service: switch.turn_on
+        data:
+          entity_id: switch.garageswitch_switch_2_0
+
+### Restart ZoneMinder
+shell_command:
+  restart_zm: sudo systemctl restart zoneminder.service
+
+### notify
+notify:
+#  name: notify
+#  platform: message_bird
+#  api_key: !secret mb_api_key
+#  name: twitter
+#  platform: twitter
+#  consumer_key: !secret twitter_consumer_key
+#  consumer_secret: !secret twitter_consumer_secret
+#  access_token: !secret twitter_access_token
+#  access_token_secret: !secret twitter_access_token_secret
+  name: gmail
+  platform: smtp
+  server: smtp.gmail.com
+  port: 587
+  sender: !secret gmail_sender
+  username: !secret gmail_user
+  password: !secret gmail_password
+  recipient: !secret gmail_recipient
+  starttls: true
+
+### Alerts
+alert: !include alerts.yaml

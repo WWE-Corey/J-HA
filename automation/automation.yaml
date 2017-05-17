@@ -1,0 +1,195 @@
+### automation.yaml
+
+################################
+### garage door momentary switch
+################################
+- alias: Garage Door Reset
+  hide_entity: True
+  trigger:
+    - platform: time
+      seconds: '/4'
+  condition:
+    condition: state
+    entity_id: switch.garageswitch_switch_2_0
+    state: "on"
+  action:
+    service: switch.turn_off
+    entity_id: switch.garageswitch_switch_2_0
+
+################################
+### manual alarm panel
+################################
+
+- alias: Alarm Away
+  hide_entity: True
+  trigger:
+    - platform: state
+      entity_id: sensor.frontd_alarm_level_5
+      state: '255'
+    - platform: state
+      entity_id: sensor.garaged_alarm_level_6
+      state: '255'
+    - platform: state
+      entity_id: sensor.backd_alarm_level_7
+      state: '255'
+    - platform: state
+      entity_id: binary_sensor.multisensor1_sensor_9
+      state: 'on'
+  condition:
+    condition: state
+    entity_id: alarm_control_panel.ha_alarm
+    state: armed_away
+  action:
+    service: alarm_control_panel.alarm_trigger
+    entity_id: alarm_control_panel.ha_alarm
+
+- alias: Alarm Home
+  hide_entity: True
+  trigger:
+    - platform: state
+      entity_id: sensor.frontd_alarm_level_5
+      state: '255'
+    - platform: state
+      entity_id: sensor.garaged_alarm_level_6
+      state: '255'
+    - platform: state
+      entity_id: sensor.backd_alarm_level_7
+      state: '255'
+  condition:
+    condition: state
+    entity_id: alarm_control_panel.ha_alarm
+    state: armed_home
+  action:
+    service: alarm_control_panel.alarm_trigger
+    entity_id: alarm_control_panel.ha_alarm
+
+################################
+### alarm light flash on
+################################
+
+- alias: Triggered Flash
+  hide_entity: True
+  trigger:
+    platform: state
+    entity_id: alarm_control_panel.ha_alarm
+    state: 'triggered'
+  action:
+    - service: script.turn_on
+      entity_id: script.light_flash
+    - service: notify.gmail
+      data:
+#        message: 'Home Alarm Triggered {{now.now().strftime("%Y%m%d-%H%M%S")}}'
+        message: 'Home Alarm Triggered {{now().strftime("%Y%m%d-%H%M%S")}}'
+################################
+### alarm light flash off
+################################
+
+- alias: Disarmed Off
+  hide_entity: True
+  trigger:
+    platform: state
+    entity_id: alarm_control_panel.ha_alarm
+    state: 'disarmed'
+  action:
+    - service: script.turn_off
+      entity_id: script.light_loop
+    - service: notify.gmail
+      data:
+#        message: 'Home Alarm Reset {{now.now().strftime("%Y%m%d-%H%M%S")}}'
+        message: 'Home Alarm Reset {{now().strftime("%Y%m%d-%H%M%S")}}'
+
+
+################################
+### reboot Wink Hub
+################################
+
+- alias: Wink Reboot
+  hide_entity: True
+  trigger:
+    platform: time
+    hours: 2
+    minutes: 0
+    seconds: 0
+  action:
+    - service: script.turn_on
+      entity_id: script.winkreboot
+
+################################
+### Front Porch Motion Light
+################################
+
+#- alias: Turn on Front Porch Motion Light
+#  trigger:
+#    platform: state
+#    entity_id: binary_sensor.multisensor1_sensor_9_0
+#    state: 'on'
+#  condition:
+#    condition: and
+#    conditions:
+#      - condition: sun
+#        before: sunset
+#  action:
+#    service: homeassistant.turn_on
+#    entity_id: light.front_porch_light
+#
+#- alias: Turn off Front Porch Motion Light
+#  trigger:
+#    platform: state
+#    entity_id: binary_sensor.multisensor1_sensor_9_0
+#    state: 'off'
+#    for:
+#      minutes: 2
+#  action:
+#    service: homeassistant.turn_off
+#    entity_id: light.front_porch_light
+
+################################
+### reboot BP Camera
+################################
+
+#- alias: BPC Reboot
+#  hide_entity: True
+#  trigger:
+#    platform: state
+#    entity_id: device_tracker.00626e49f64c
+#    state: 'not_home'
+#    for:
+#      hours: 0
+#      minutes: 0
+#      seconds: 15
+#  action:
+#    - service: script.turn_on
+#      entity_id: script.bpcreboot
+
+################################
+### reboot FP Camera
+################################
+
+#- alias: FPC Reboot
+#  hide_entity: True
+#  trigger:
+#    platform: state
+#    entity_id: device_tracker.c4d655304745
+#    state: 'not_home'
+#    for:
+#      hours: 0
+#      minutes: 0
+#      seconds: 15
+#  action:
+#    - service: script.turn_on
+#      entity_id: script.fpcreboot
+
+################################
+### Back Porch Light Off
+################################
+
+#- alias: BPL Off
+#  hide_entity: True
+#  trigger:
+#    platform: time
+#    hours: 3
+#    minutes: 30
+#    seconds: 0
+#  action:
+#    - service: switch.turn_off
+#      entity_id: light.back_porch

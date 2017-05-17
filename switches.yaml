@@ -1,0 +1,75 @@
+- platform: template
+  switches:
+    fan:
+      friendly_name: 'LR Fan Light'
+      value_template: "{{ is_state('group.ceiling_fan_light', 'on') }}"
+      turn_on:
+        service: light.turn_on
+        entity_id: group.ceiling_fan_light
+      turn_off:
+        service: light.turn_off
+        entity_id: group.ceiling_fan_light
+    lrlights:
+      friendly_name: 'LR Table Lights'
+      value_template: "{{ is_state('group.living_room', 'on') }}"
+      turn_on:
+        service: light.turn_on
+        entity_id: group.living_room
+      turn_off:
+        service: light.turn_off
+        entity_id: group.living_room
+    fan2:
+      friendly_name: 'BR Fan Light'
+      value_template: "{{ is_state('group.bedroom_lights', 'on') }}"
+      turn_on:
+        service: light.turn_on
+        entity_id: group.bedroom_lights
+      turn_off:
+        service: light.turn_off
+        entity_id: group.bedroom_lights
+    kitchen2:
+      friendly_name: 'Kitchen Switch'
+      value_template: "{{ is_state('group.kitchen', 'on') }}"
+      turn_on:
+        service: light.turn_on
+        entity_id:
+          - group.kitchen
+          - group.dining_room
+      turn_off:
+        service: light.turn_off
+        entity_id:
+          - group.kitchen
+          - group.dining_room
+    hall:
+      friendly_name: 'Hallway Lights'
+      value_template: "{{ is_state('group.hall', 'on') }}"
+      turn_on:
+        service: light.turn_on
+        entity_id:
+          - group.hall
+      turn_off:
+        service: light.turn_off
+        entity_id:
+          - group.hall
+    frporch:
+      friendly_name: 'Front Porch Light'
+      value_template: "{{ is_state('light.front_porch_light', 'on') }}"
+      turn_on:
+        service: light.turn_on
+        entity_id:
+          - light.front_porch_light
+      turn_off:
+        service: light.turn_off
+        entity_id:
+          - light.front_porch_light
+    baporch:
+      friendly_name: 'Back Porch Light'
+      value_template: "{{ is_state('light.back_porch_light', 'on') }}"
+      turn_on:
+        service: light.turn_on
+        entity_id:
+          - light.back_porch_light
+      turn_off:
+        service: light.turn_off
+        entity_id:
+          - light.back_porch_light
