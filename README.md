@@ -18,4 +18,4 @@ I have been using Home Assistant for about 8 months now and wanted to share my c
 14) FireTv (recently stopped working)
 15) Kodi
 
-I plan to add Google Home, Smart Mirror, zwave door locks, and possibly Octoprint.
+I plan to add Google Home, Magic Mirror, zwave door locks, and possibly Octoprint.
