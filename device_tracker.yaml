@@ -19,18 +19,6 @@
   consider_home: 180
 
 #################
-### netgear
-#################
-#- platform: netgear
-#  host: 192.168.2.1
-#  username: admin
-#  password: MiWiCoIy1
-##  port: 8443
-#  interval_seconds: 15
-#  consider_home: 180
-#  track_new_devices: yes
-
-#################
 ### gpslogger
 #################
 - platform: gpslogger

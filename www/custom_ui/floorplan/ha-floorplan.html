@@ -41,11 +41,11 @@
       },
       entityConfigs: {
         type: Array,
-        value: [],
+        value: () => { return []; },
       },
       cssRules: {
         type: Array,
-        value: [],
+        value: () => { return []; },
       },
     },
     stopPropagation(e) {

@@ -79,6 +79,20 @@
               to_state: 'off'
               duration: 10
 
+        - name: Bruh sensors
+          entities:
+            - sensor.bedroom_motion_sensor
+          states:
+            - state: 'standby'
+              class: 'info-light'
+            - state: 'motion detected'
+              class: 'warning-light'
+          state_transitions:
+            - name: On to off
+              from_state: 'motion detected'
+              to_state: 'standby'
+              duration: 10
+
         - name: Cameras
           entities:
             - camera.hallway

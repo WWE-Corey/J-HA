@@ -115,6 +115,28 @@
       entity_id: script.winkreboot
 
 ################################
+### Bedroom Motion Light
+################################
+
+- alias: Turn on Bedroom Motion Light
+  trigger:
+    platform: state
+    entity_id: sensor.bedroom_motion_sensor
+    state: 'motion detected'
+  action:
+    service: homeassistant.turn_on
+    entity_id: light.sn2_led
+
+- alias: Turn off Bedroom Motion Light
+  trigger:
+    platform: state
+    entity_id: sensor.bedroom_motion_sensor
+    state: 'standby'
+  action:
+    service: homeassistant.turn_off
+    entity_id: light.sn2_led
+
+################################
 ### Front Porch Motion Light
 ################################
 

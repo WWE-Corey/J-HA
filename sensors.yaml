@@ -59,8 +59,8 @@
 #    - upload
 
 - platform: glances
-  host: !secrets glances_host
-  port: !secrets glances_port
+  host: 192.168.2.100
+  port: 61208
   name: WWE-Server
   resources:
     - 'disk_use_percent'
@@ -271,24 +271,24 @@
 
 - platform: mqtt
   state_topic: "sensornode2"
-  name: "SN2 Humidity"
+  name: "Bedroom Humidity"
   unit_of_measurement: "%"
   value_template: '{{ value_json.humidity | round(1) }}'
 
 - platform: mqtt
   state_topic: "sensornode2"
-  name: "SN2 LDR"
+  name: "Bedroom LDR"
   ##This sensor is not calibrated to actual LUX. Rather, this a map of the input voltage ranging from 0 - 1023.
   unit_of_measurement: "LUX"
   value_template: '{{ value_json.ldr }}'
 
 - platform: mqtt
   state_topic: "sensornode2"
-  name: "SN2 PIR"
+  name: "Bedroom Motion Sensor"
   value_template: '{{ value_json.motion }}'
   
 - platform: mqtt
   state_topic: "sensornode2"
-  name: "SN2 Temperature"
+  name: "Bedroom Temperature"
   unit_of_measurement: "°F"
   value_template: '{{ value_json.temperature | round(1) }}'

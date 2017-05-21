@@ -26,11 +26,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.8101934"
-     inkscape:cx="214.87767"
-     inkscape:cy="285.38386"
+     inkscape:zoom="1.28"
+     inkscape:cx="157.32375"
+     inkscape:cy="393.95095"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer3"
+     inkscape:current-layer="layer4"
      showgrid="false"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -79,7 +79,8 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="HA"
-     transform="translate(2.950069)">
+     transform="translate(2.950069)"
+     sodipodi:insensitive="true">
     <path
        style="fill:none;stroke-width:3.77952766;stroke-miterlimit:4;stroke-dasharray:none;paint-order:fill markers stroke"
        d="m 123.23828,173.31445 v 65.66016 118.1875 h 36.36524 v -118.1875 h 36.36523 v -65.66016 h -36.36523 z"
@@ -94,12 +95,12 @@
        x="92.553543"
        y="104.26127" />
     <ellipse
-       style="fill:none;stroke-width:1.00228047;stroke-miterlimit:4;stroke-dasharray:none;paint-order:fill markers stroke"
+       style="fill:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;paint-order:fill markers stroke"
        id="group.bedroom_lights"
        cx="16.837982"
-       cy="69.970108"
+       cy="70.044052"
        rx="4.543582"
-       ry="4.4300838" />
+       ry="4.4099469" />
     <ellipse
        style="fill:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;paint-order:fill markers stroke"
        id="group.ceiling_fan_light"
@@ -164,12 +165,12 @@
        rx="1.8898809"
        ry="1.7953869" />
     <ellipse
-       style="fill:none;stroke-width:1.00228047;stroke-miterlimit:4;stroke-dasharray:none;paint-order:fill markers stroke"
+       style="fill:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;paint-order:fill markers stroke"
        id="light.bedroomlamp_level_17_0"
        cx="5.1026883"
-       cy="78.963966"
+       cy="78.997025"
        rx="1.8898809"
-       ry="1.8035851" />
+       ry="1.7953869" />
     <rect
        style="fill:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;paint-order:fill markers stroke"
        id="binary_sensor.frontd_sensor_5_0"
@@ -246,19 +247,11 @@
        d="m 62.433776,90.196968 -0.92602,0.0055 a 0.26458333,0.26458333 0 0 0 -0.263,0.266155 l 0.0189,3.174944 a 0.26458333,0.26458333 0 0 0 0.26616,0.262995 l 2.64579,-0.0158 a 0.26458333,0.26458333 0 0 0 0.263,-0.266155 l -0.019,-3.174944 a 0.26458333,0.26458333 0 0 0 -0.26615,-0.262995 l -0.92603,0.0055 1.052,-1.064639 -2.91037,0.01738 z"
        inkscape:connector-curvature="0"
        style="fill:#1a1a1a;stroke-width:0.26458332" />
-    <rect
-       style="fill:none;stroke-width:1.00228047;stroke-miterlimit:4;stroke-dasharray:none;paint-order:fill markers stroke"
-       id="sensor.bedroom_motion_sensor"
-       width="29.086441"
-       height="32.155865"
-       x="2.604126"
-       y="54.080963" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer4"
-     inkscape:label="Text"
-     sodipodi:insensitive="true">
+     inkscape:label="Text">
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444447px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"

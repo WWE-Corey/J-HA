@@ -296,3 +296,5 @@
     sensor.process_zma:
       friendly_name: ZoneMinder
       icon: mdi:server-security
+    light.sn2_led:
+      hidden: true

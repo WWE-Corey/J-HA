@@ -286,12 +286,16 @@ group:
       - sensor.multisensor1_luminance_9_3
       - sensor.multisensor1_relative_humidity_9_5
       - sensor.multisensor1_temperature_9_1
+      - sensor.bedroom_LDR
+      - sensor.bedroom_humidity
+      - sensor.bedroom_temperature
 
   Doors:
     name: Doors
     entities:
       - binary_sensor.multisensor1_sensor_9_0
       - binary_sensor.server_sensor_18_0
+      - sensor.bedroom_motion_sensor
       - binary_sensor.frontd_sensor_5_0
       - sensor.frontd_access_control_5_9
       - sensor.frontd_alarm_level_5_1
@@ -447,17 +451,17 @@ group:
 
   sensor_node_cards:  
     name: Sensor Nodes  
-    entities:  
-      - sensor.sn1_temperature  
-      - sensor.sn1_humidity  
-      - sensor.sn1_ldr  
-      - sensor.sn1_pir  
+    entities:
+      - sensor.sn1_temperature
+      - sensor.sn1_humidity
+      - sensor.sn1_ldr
+      - sensor.sn1_pir
       - light.sn1_led
-      - sensor.sn2_temperature  
-      - sensor.sn2_humidity  
-      - sensor.sn2_ldr  
-      - sensor.sn2_pir  
-      - light.sn2_led
+      - sensor.sn2_temperature
+#      - sensor.sn2_humidity
+#      - sensor.sn2_ldr
+#      - sensor.sn2_pir
+#      - light.sn2_led
 
 #### scripts
 script:
