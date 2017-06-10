@@ -175,6 +175,16 @@ light:
     optimistic: false  
     qos: 0
 
+  - platform: mqtt_json
+    name: "SN3 LED"
+    state_topic: "sensornode3"
+    command_topic: "sensornode3/set"
+    brightness: true
+    flash: true
+    rgb: true
+    optimistic: false  
+    qos: 0
+
 group:
 ####VIEWS
   family:
@@ -239,6 +249,13 @@ group:
 #     - script.fpcreboot
      - script.winkreboot
      - script.restart_ha
+
+  3d_view:
+   view: yes
+   name: 3D Station
+   entities:
+     - group.3d_station
+     - camera.octopi
 
 ####GROUPS
   Layout:
@@ -413,6 +430,7 @@ group:
     entities:
       - sensor.wweserver
       - sensor.pikodi
+      - sensor.octopi
       - sensor.fire
       - sensor.wink
       - sensor.homeportal
@@ -422,6 +440,9 @@ group:
       - sensor.printer
       - sensor.firetab
       - sensor.process_zma
+      - device_tracker.60019423825d
+      - device_tracker.a020a61bb97a
+      - device_tracker.5ccf7ffd88ea
 
   Security_devices:
     name: Cameras
@@ -457,11 +478,25 @@ group:
       - sensor.sn1_ldr
       - sensor.sn1_pir
       - light.sn1_led
-      - sensor.sn2_temperature
-#      - sensor.sn2_humidity
-#      - sensor.sn2_ldr
-#      - sensor.sn2_pir
-#      - light.sn2_led
+      - light.sn2_led
+      - sensor.sn3_temperature
+      - sensor.sn3_humidity
+      - sensor.sn3_ldr
+      - sensor.sn3_motion_sensor
+      - light.sn3_led
+
+  3d_station:
+    name: 3D Station
+    entities:
+      - switch.3d_power_strip_switch_19_0
+      - sensor.3d_power_strip_energy_19_0
+      - sensor.3d_power_strip_power_19_8
+      - switch.3d_power_strip_switch_19_0_4
+      - sensor.3d_power_strip_energy_19_0_4
+      - sensor.3d_power_strip_power_19_8_4
+      - switch.3d_power_strip_switch_19_0_5
+      - sensor.3d_power_strip_energy_19_0_5
+      - sensor.3d_power_strip_power_19_8_5
 
 #### scripts
 script:

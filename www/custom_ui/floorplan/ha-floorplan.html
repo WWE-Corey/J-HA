@@ -4,8 +4,26 @@
 <dom-module id="ha-floorplan">
 
   <template>
-    <div class="debug"></div>
-    <div class="floorplan" on-tap="stopPropagation"></div>
+    <style>
+      .loading-container {
+        text-align: center;
+        padding: 8px;
+      }
+      .loading {
+        height: 0px;
+        overflow: hidden;
+      }
+    </style>
+
+    <template is='dom-if' if='[[isLoading]]'>
+      <div class='loading-container'>
+        <paper-spinner active alt='Loading'></paper-spinner>
+      </div>
+    </template>
+
+    <div id="debug"></div>
+    <div id="floorplan" on-tap="stopPropagation"></div>
+
   </template>
 
 </dom-module>
@@ -34,6 +52,10 @@
       },
       config: {
         type: Object,
+      },
+      isLoading: {
+        type: Boolean,
+        value: true,
       },
       timeDifference: {
         type: Number,
@@ -65,20 +87,27 @@
         });
         HAWS.subscribeEntities(conn, entities => this.handleEntities(entities));
       }, err => { console.error(err); });
-      this.addExternalCss();
-      this.loadFloorPlan();
+      this.addExternalCss(() => {
+        this.loadFloorPlan(() => {
+          this.isLoading = false;
+          this.handleEntities(this.hass.states);
+        });
+      });
       if (this.config.groups.find(entityGroup => entityGroup.state_transitions)) {
         setInterval(this.updateStateTransitions.bind(this), 100);
       }
     },
-    addExternalCss() {
+    addExternalCss(callback) {
       if (this.config.stylesheet) {
         var styleSheetUrl = this.config.stylesheet + '?cacheBuster=' + (new Date().getTime());
         var link = document.createElement('link');
         link.type = 'text/css';
         link.rel = 'stylesheet';
         link.href = styleSheetUrl;
-        link.onload = () => { this.onStyleSheetLoaded(e) };
+        link.onload = function() {
+          this.instance.onStyleSheetLoaded(e)
+          this.callback();
+        }.bind({ instance: this, callback: callback });
         Polymer.dom(this.root).appendChild(link);
       }
     },
@@ -96,16 +125,16 @@
         }
       }
     },
-    loadFloorPlan() {
+    loadFloorPlan(callback) {
       jQuery.ajax({
         url: this.config.image + '?cacheBuster=' + (new Date().getTime()),
         success: function (result) {
           var svg = $(result).find('svg')[0];
           $(svg).height('100%');
           $(svg).width('100%');
-          $(svg).css('position', this.isPanel ? 'absolute' : 'relative');
+          $(svg).css('position', this.instance.isPanel ? 'absolute' : 'relative');
           var svgShapes = $(svg).find('*').toArray();
-          for (var entityGroup of this.config.groups) {
+          for (var entityGroup of this.instance.config.groups) {
             for (var entityId of entityGroup.entities) {
               var entityConfig = {
                 group: entityGroup,
@@ -113,7 +142,7 @@
                 lastChangedTime: undefined,
                 svgShapeConfigs: {}
               };
-              this.entityConfigs[entityId] = entityConfig;
+              this.instance.entityConfigs[entityId] = entityConfig;
               var svgShape = svgShapes.find(svgShape => svgShape.id === entityId);
               if (svgShape) {
                 entityConfig.svgShapeConfigs[svgShape.id] = {
@@ -134,8 +163,8 @@
             }
           }
           // Create the title element for each shape (to support tooltips)
-          for (var entityId in this.entityConfigs) {
-            var entityConfig = this.entityConfigs[entityId];
+          for (var entityId in this.instance.entityConfigs) {
+            var entityConfig = this.instance.entityConfigs[entityId];
             for (svgShapeId in entityConfig.svgShapeConfigs) {
               var svgShapeConfig = entityConfig.svgShapeConfigs[svgShapeId];
               svgShapeConfig.svgShape.appendChild(document.createElementNS('', 'title'));
@@ -143,31 +172,42 @@
             }
           }
           // Create a new SVG element and copy the contents from the original SVG
-          var newSvg = document.createElementNS('', 'svg');
-          var floorplan = Polymer.dom(this.root).querySelector('.floorplan');
-          floorplan.appendChild(newSvg);
-          newSvg.outerHTML = svg.outerHTML;
-          newSvg = $(floorplan).find('svg');
+          var newSvg = $(`${svg.outerHTML}`)[0];
+          Polymer.dom(this.instance.$.floorplan).node.appendChild(newSvg);
           $(newSvg).css('cursor', 'default');
-          for (var entityId in this.entityConfigs) {
-            var entityConfig = this.entityConfigs[entityId];
+          for (var entityId in this.instance.entityConfigs) {
+            var entityConfig = this.instance.entityConfigs[entityId];
             for (svgShapeId in entityConfig.svgShapeConfigs) {
               var svgShapeConfig = entityConfig.svgShapeConfigs[svgShapeId];
               var newSvgShape = $(newSvg).find('[id="' + svgShapeConfig.svgShapeId + '"]');
               if (newSvgShape.length) {
                 svgShapeConfig.svgShape = newSvgShape[0];
                 $(newSvgShape).attr('title', 'test');
-                $(newSvgShape).on('click', this.onShapeClick.bind(this));
+                $(newSvgShape).on('click', this.instance.onShapeClick.bind(this.instance));
                 $(newSvgShape).css('cursor', 'pointer');
                 $(newSvgShape).addClass('entity');
+                if ((newSvgShape[0].nodeName === 'text') && (newSvgShape[0].id === entityId)) {
+                  var boundingBox = newSvgShape[0].getBBox();
+                  var rect = $(document.createElementNS("http://www.w3.org/2000/svg", 'rect'))
+                    .attr('id', entityId + '.background')
+                    .attr('height', boundingBox.height + 1)
+                    .attr('width', boundingBox.width + 2)
+                    .height(boundingBox.height + 1)
+                    .width(boundingBox.width + 2)
+                    .attr('x', boundingBox.x - 1)
+                    .attr('y', boundingBox.y - 0.5)
+                    .css('fill-opacity', 0);
+                  $(rect).insertBefore($(newSvgShape));
+                }
               }
             }
           }
-        }.bind(this)
+          this.callback();
+        }.bind({ instance: this, callback: callback })
       });
     },
     handleEntities(entities) {
-      var svg = Polymer.dom(this.root).querySelector('.floorplan svg');
+      var svg = Polymer.dom(this.$.floorplan).querySelector('svg');
       for (var entityId in entities) {
         var entityState = entities[entityId];
         var entityConfig = this.entityConfigs[entityId];
@@ -200,6 +240,17 @@
               if (title.length) {
                 $(svgShape).append(title);
               }
+            }
+            var rect = $(svgShape).parent().find('[id="' + entityId + '.background"]');
+            if (rect.length) {
+              var boundingBox = svgShape.getBBox();
+              $(rect)
+                .attr("x", boundingBox.x - 1)
+                .attr("y", boundingBox.y - 0.5)
+                .attr('height', boundingBox.height + 1)
+                .attr('width', boundingBox.width + 2)
+                .height(boundingBox.height + 1)
+                .width(boundingBox.width + 2);
             }
           }
           if (!this.cssRules || !this.cssRules.length)
@@ -248,18 +299,10 @@
             }
           }
           // Remove any obsolete classes from the entity
-          for (obsoleteClass of obsoleteClasses) {
-            //console.log(`${entityId}: removing class "${obsoleteClasses}" (${svgShape.id})`);
-            if ($(svgShape).hasClass(obsoleteClass)) {
-              $(svgShape).removeClass(obsoleteClass);
-            }
-          }
+          this.removeClasses(entityId, svgShape, obsoleteClasses);
           // Add the target class to the entity
           if (targetClass) {
-            if (!$(svgShape).hasClass(targetClass)) {
-              //console.log(`${entityId}: adding class "${targetClass}" for current state "${entityState.state}" (${svgShape.id})`);
-              $(svgShape).addClass(targetClass);
-            }
+            this.addClass(entityId, svgShape, targetClass);
           }
           if (this.config.last_motion_entity && this.config.last_motion_class && entities[this.config.last_motion_entity] &&
             (entityState.attributes.friendly_name === entities[this.config.last_motion_entity].state)) {
@@ -275,10 +318,40 @@
         }
       }
     },
+    addClass(entityId, svgShape, className) {
+      if (!$(svgShape).hasClass(className)) {
+        //console.log(`${entityId}: adding class "${className}" for current state "${entityState.state}" (${svgShape.id})`);
+        $(svgShape).addClass(className);
+        if ((svgShape.nodeName === 'text')) {
+          var rect = $(svgShape).parent().find('[id="' + entityId + '.background"]');
+          if (rect.length) {
+            if (!$(rect).hasClass(className + '-background')) {
+              $(rect).addClass(className + '-background');
+            }
+          }
+        }
+      }
+    },
+    removeClasses(entityId, svgShape, classes) {
+      for (className of classes) {
+        //console.log(`${entityId}: removing class "${className}" (${svgShape.id})`);
+        if ($(svgShape).hasClass(className)) {
+          $(svgShape).removeClass(className);
+          if ((svgShape.nodeName === 'text')) {
+            var rect = $(svgShape).parent().find('[id="' + entityId + '.background"]');
+            if (rect.length) {
+              if ($(rect).hasClass(className + '-background')) {
+                $(rect).removeClass(className + '-background');
+              }
+            }
+          }
+        }
+      }
+    },
     updateStateTransitions() {
       if (!this.cssRules || !this.cssRules.length)
         return;
-      var svg = Polymer.dom(this.root).querySelector('.floorplan svg');
+      var svg = Polymer.dom(this.$.floorplan).querySelector('svg');
       for (var entityId in this.entityConfigs) {
         var entityConfig = this.entityConfigs[entityId];
         if (!entityConfig || !entityConfig.group.states || !entityConfig.group.state_transitions || (entityConfig.lastChangedTime === undefined))
@@ -324,16 +397,32 @@
     setEntityStyle(svgShapeConfig, svgShape, entityConfig, state) {
       var stateConfig = entityConfig.group.states.find(stateConfig => (stateConfig.state === entityConfig.lastState));
       if (stateConfig) {
-        var fill = this.getFill(stateConfig);
-        if (fill) {
-          svgShape.style.fill = fill;
-        }
-        else {
-          if (svgShapeConfig.clonedSvgShape) {
-            svgShape.style.fill = svgShapeConfig.clonedSvgShape.style.fill;
+        if (svgShape.nodeName === 'text') {
+          var stroke = this.getStroke(stateConfig);
+          if (stroke) {
+            svgShape.syle.stroke = stroke;
           }
           else {
-            // ???
+            if (svgShapeConfig.clonedSvgShape) {
+              svgShape.style.stroke = svgShapeConfig.clonedSvgShape.style.stroke;
+            }
+            else {
+              // ???
+            }
+          }
+        }
+        else {
+          var fill = this.getFill(stateConfig);
+          if (fill) {
+            svgShape.style.fill = fill;
+          }
+          else {
+            if (svgShapeConfig.clonedSvgShape) {
+              svgShape.style.fill = svgShapeConfig.clonedSvgShape.style.fill;
+            }
+            else {
+              // ???
+            }
           }
         }
       }
@@ -350,7 +439,7 @@
     getFill(stateConfig) {
       var fill = undefined;
       for (var cssRule of this.cssRules) {
-        if (cssRule.selectorText === `.${stateConfig.class}`) {
+        if (cssRule.selectorText.indexOf(`.${stateConfig.class}`) >= 0) {
           if (cssRule.style && cssRule.style.fill) {
             if (cssRule.style.fill[0] === '#') {
               fill = cssRule.style.fill;
@@ -393,8 +482,8 @@
       return func(entity, entities, this.hass, this.config);
     },
     debug(message) {
-      var debug = Polymer.dom(this.root).querySelector('.debug');
-      $(debug).append(message + '<br>');
+      var debug = Polymer.dom(this.$.debug).node;
+      $(debug).html($(debug).html() + message + '<br>')
     },
     rgbToHex(rgb) {
       return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);

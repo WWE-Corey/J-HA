@@ -175,6 +175,20 @@
     ex6120:
       value_template: '{% if is_state("device_tracker.020fb5d10182", "home") %}Online{% else %}Offline{%- endif %}'
       friendly_name: 'EX6120'
+    octopi:
+      value_template: '{% if is_state("device_tracker.b827ebf6aacb", "home") %}Online{% else %}Offline{%- endif %}'
+      friendly_name: 'Octopi'
+    thermostat_temperature_current:
+      value_template: >-
+        {%- if states.climate.thermostat -%}
+          {{ states.climate.thermostat.attributes.current_temperature }}
+        {%- else -%}
+          n/a
+        {%- endif -%}
+#      unit_of_measurement: '%'
+      entity_id: climate.thermostat
+      friendly_name: 'Thermostat Temperature Current'
+
 ### Zwave batteries
     fd_battery:
       value_template: >-
@@ -227,23 +241,23 @@
           {% endif %}
         {% endfor %}
 
-- platform: mqtt
-  state_topic: "wallpanel/mywallpanel/sensor/battery"
-  name: "wallpanel battery"
-  unit_of_measurement: "%"
-  value_template: '{{ value_json.value }}'
+#- platform: mqtt
+#  state_topic: "wallpanel/mywallpanel/sensor/battery"
+#  name: "wallpanel battery"
+#  unit_of_measurement: "%"
+#  value_template: '{{ value_json.value }}'
 
-- platform: mqtt
-  state_topic: "wallpanel/mywallpanel/sensor/brightness"
-  name: "wallpanel brightness"
-  unit_of_measurement: "lx"
-  value_template: '{{ value_json.value }}'
+#- platform: mqtt
+#  state_topic: "wallpanel/mywallpanel/sensor/brightness"
+#  name: "wallpanel brightness"
+#  unit_of_measurement: "lx"
+#  value_template: '{{ value_json.value }}'
 
-- platform: mqtt
-  state_topic: "wallpanel/mywallpanel/sensor/pressure"
-  name: "wallpanel pressure"
-  unit_of_measurement: "mb"
-  value_template: '{{ value_json.value }}'
+#- platform: mqtt
+#  state_topic: "wallpanel/mywallpanel/sensor/pressure"
+#  name: "wallpanel pressure"
+#  unit_of_measurement: "mb"
+#  value_template: '{{ value_json.value }}'
 
 - platform: mqtt
   state_topic: "sensornode1"
@@ -290,5 +304,29 @@
 - platform: mqtt
   state_topic: "sensornode2"
   name: "Bedroom Temperature"
+  unit_of_measurement: "°F"
+  value_template: '{{ value_json.temperature | round(1) }}'
+
+- platform: mqtt
+  state_topic: "sensornode3"
+  name: "SN3 Humidity"
+  unit_of_measurement: "%"
+  value_template: '{{ value_json.humidity | round(1) }}'
+
+- platform: mqtt
+  state_topic: "sensornode3"
+  name: "SN3 LDR"
+  ##This sensor is not calibrated to actual LUX. Rather, this a map of the input voltage ranging from 0 - 1023.
+  unit_of_measurement: "LUX"
+  value_template: '{{ value_json.ldr }}'
+
+- platform: mqtt
+  state_topic: "sensornode3"
+  name: "SN3 Motion Sensor"
+  value_template: '{{ value_json.motion }}'
+  
+- platform: mqtt
+  state_topic: "sensornode3"
+  name: "SN3 Temperature"
   unit_of_measurement: "°F"
   value_template: '{{ value_json.temperature | round(1) }}'

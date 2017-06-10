@@ -10,12 +10,15 @@
         - name: Sensors
           entities:
              - sensor.multisensor1_temperature_9_1
+             - sensor.thermostat_temperature_current
+             - sensor.bedroom_temperature
+             - sensor.server_temperature_18_1
           text_template: '${entity.state ? entity.state : "unknown"}'
           class_template: '
             var temp = parseFloat(entity.state.replace("°", ""));
-            if (temp < 10)
+            if (temp < 65)
               return "temp-low";
-            else if (temp < 30)
+            else if (temp < 75)
               return "temp-medium";
             else
               return "temp-high";
@@ -44,6 +47,7 @@
           entities:
              - script.garage_door
              - climate.thermostat
+             - switch.3d_power_strip_switch_19_0_5
           states:
             - state: 'on'
               class: 'doorbell-on'
@@ -70,9 +74,9 @@
             - binary_sensor.frontd_sensor_5_0
           states:
             - state: 'off'
-              class: 'info-light'
+              class: 'info-background'
             - state: 'on'
-              class: 'warning-light'
+              class: 'warning-background'
           state_transitions:
             - name: On to off
               from_state: 'on'
@@ -84,9 +88,9 @@
             - sensor.bedroom_motion_sensor
           states:
             - state: 'standby'
-              class: 'info-light'
+              class: 'info-background'
             - state: 'motion detected'
-              class: 'warning-light'
+              class: 'warning-background'
           state_transitions:
             - name: On to off
               from_state: 'motion detected'
@@ -109,6 +113,7 @@
             - camera.garage
             - camera.k_cam
             - camera.lr_cam
+            - camera.octopi
           states:
             - state: 'idle'
               class: 'camera-idle'

@@ -270,8 +270,8 @@
     script.winkreboot:
       friendly_name: Reboot Wink
       emulated_hue: true
-#    switch.leviton_dzpa11lw_plugin_appliance_module_switch_3_0:
-#      friendly_name: Trigger2
+#    switch.3dprinter_switch_3_0:
+#      friendly_name: 3D Printer
 #      emulated_hue: true
 #    switch.trigger_switch_16_0:
 #      friendly_name: Trigger1
@@ -293,8 +293,71 @@
       hidden: true
     sensor.ex6120:
       icon: mdi:router-wireless
+    device_tracker.b827ebf6aacb:
+      hidden: true
+    sensor.octopi:
+      icon: mdi:printer-3d
     sensor.process_zma:
       friendly_name: ZoneMinder
       icon: mdi:server-security
     light.sn2_led:
+      hidden: true
+    sensor.thermostat_temperature_current:
+      hidden: true
+### Aeotec Power Strip
+    switch.3d_power_strip_switch_19_0:
+      friendly_name: 3D Power Strip
+    sensor.3d_power_strip_energy_19_0:
+      friendly_name: 3D Power Strip Current kWh
+    sensor.3d_power_strip_power_19_8:
+      friendly_name: 3D Power Strip Current Wattage
+    sensor.3d_power_strip_previous_reading_19_1:
+      hidden: true
+    sensor.3d_power_strip_previous_reading_19_9:
+      hidden: true
+    switch.3d_power_strip_switch_19_0_2:
+      friendly_name: Outlet 3
+    sensor.3d_power_strip_energy_19_0_2:
+      friendly_name: Outlet 3 Current kWh
+      hidden: true
+    sensor.3d_power_strip_power_19_8_2:
+      friendly_name: Outlet 3 Current Wattage
+      hidden: true
+    sensor.3d_power_strip_previous_reading_19_1_2:
+      hidden: true
+    sensor.3d_power_strip_previous_reading_19_9_2:
+      hidden: true
+    switch.3d_power_strip_switch_19_0_3:
+      friendly_name: Outlet 4
+    sensor.3d_power_strip_energy_19_0_3:
+      friendly_name: Outlet 4 Current kWh
+      hidden: true
+    sensor.3d_power_strip_power_19_8_3:
+      friendly_name: Outlet 4 Current Wattage
+      hidden: true
+    sensor.3d_power_strip_previous_reading_19_1_3:
+      hidden: true
+    sensor.3d_power_strip_previous_reading_19_9_3:
+      hidden: true
+    switch.3d_power_strip_switch_19_0_4:
+      friendly_name: 3D Light
+      emulated_hue: true
+    sensor.3d_power_strip_energy_19_0_4:
+      friendly_name: 3D Light Current kWh
+    sensor.3d_power_strip_power_19_8_4:
+      friendly_name: 3D Light Current Wattage
+    sensor.3d_power_strip_previous_reading_19_1_4:
+      hidden: true
+    sensor.3d_power_strip_previous_reading_19_9_4:
+      hidden: true
+    switch.3d_power_strip_switch_19_0_5:
+      friendly_name: 3D Printer
+      emulated_hue: true
+    sensor.3d_power_strip_energy_19_0_5:
+      friendly_name: 3D Printer Current kWh
+    sensor.3d_power_strip_power_19_8_5:
+      friendly_name: 3D Printer Current Wattage
+    sensor.3d_power_strip_previous_reading_19_1_5:
+      hidden: true
+    sensor.3d_power_strip_previous_reading_19_9_5:
       hidden: true
